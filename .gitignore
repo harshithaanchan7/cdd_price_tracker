@@ -10,6 +10,7 @@ __pycache__/
 .env
 .env.*
 !.env.example
+**/.env
 
 # IDE settings
 .vscode/
@@ -26,6 +27,9 @@ htmlcov/
 # npm logs
 npm-debug.log*
 *.log
+
+# Celery Beat runtime files
+**/celerybeat-schedule*
 
 # Operating system
 .DS_Store
