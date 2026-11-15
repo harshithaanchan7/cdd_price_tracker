@@ -6,3 +6,19 @@ __pycache__/
 .vscode/
 .idea/
 .DS_Store
+
+# Node.js and frontend
+node_modules/
+dist/
+
+# Test coverage
+.coverage
+htmlcov/
+
+# Environment files
+.env.*
+!.env.example
+
+# npm logs
+npm-debug.log*
+*.log
