@@ -1,11 +1,19 @@
+
+# Python
 venv/
+.venv/
 __pycache__/
-*.pyc
+*.py[cod]
 .pytest_cache/
+
+# Environment files
 .env
+.env.*
+!.env.example
+
+# IDE settings
 .vscode/
 .idea/
-.DS_Store
 
 # Node.js and frontend
 node_modules/
@@ -15,10 +23,10 @@ dist/
 .coverage
 htmlcov/
 
-# Environment files
-.env.*
-!.env.example
-
 # npm logs
 npm-debug.log*
 *.log
+
+# Operating system
+.DS_Store
+Thumbs.db
