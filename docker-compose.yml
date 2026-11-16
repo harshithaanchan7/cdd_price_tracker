@@ -60,10 +60,18 @@ services:
       context: .
       dockerfile: Dockerfile.worker
     container_name: price_tracker_worker
-    command: celery -A celery_app.celery_app worker --loglevel=info
+    # Demo store runs inside the worker container on 127.0.0.1:8001
+    # (it is only allowed to bind to 127.0.0.1, and 8000 is the backend's port)
+    command: >
+      sh -c "python /app/scraper/demo_store/server.py --port 8001 &
+             celery -A celery_app.celery_app worker --loglevel=info"
+    env_file:
+      - path: .env
+        required: false
     environment:
       MONGO_URI: mongodb://mongo:27017/price_tracker
       REDIS_URL: redis://redis:6379/0
+      LOCAL_STORE_URL: http://127.0.0.1:8001
     depends_on:
       mongo:
         condition: service_healthy
@@ -77,6 +85,9 @@ services:
       dockerfile: Dockerfile.worker
     container_name: price_tracker_beat
     command: celery -A celery_app.celery_app beat --loglevel=info
+    env_file:
+      - path: .env
+        required: false
     environment:
       MONGO_URI: mongodb://mongo:27017/price_tracker
       REDIS_URL: redis://redis:6379/0

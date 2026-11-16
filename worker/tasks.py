@@ -37,6 +37,14 @@ def check_price(product_id, simulated_price=None):
         current_price = float(result.current_price)
         checked_at = result.checked_at
 
+        # Replace the "Pending first price check" placeholder with the real name
+        if result.product_name and result.product_name != product_name:
+            product_name = result.product_name
+            products_collection.update_one(
+                {"_id": ObjectId(product_id)},
+                {"$set": {"product_name": product_name}}
+            )
+
         policy = result.cache_policy
 
         if policy.price_ttl_seconds <= 0:
@@ -70,11 +78,17 @@ def check_price(product_id, simulated_price=None):
     if current_price <= target_price:
 
         if not alert_sent:
-            send_telegram_alert(
-                product_name,
-                current_price,
-                target_price
-            )
+            try:
+                send_telegram_alert(
+                    product_name,
+                    current_price,
+                    target_price
+                )
+            except Exception as exc:
+                # Don't crash the whole price check if Telegram isn't set up;
+                # alert_sent stays False so it retries on the next check.
+                print(f"WARNING: could not send Telegram alert: {exc}")
+                return "Target reached, but alert could not be sent"
 
             products_collection.update_one(
                 {"_id": ObjectId(product_id)},
