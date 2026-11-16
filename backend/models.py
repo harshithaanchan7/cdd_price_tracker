@@ -1,7 +1,7 @@
 from datetime import date, datetime
 from typing import Optional
 
-from pydantic import BaseModel, Field, HttpUrl, model_validator
+from pydantic import BaseModel, EmailStr, Field, HttpUrl, model_validator
 
 
 class ProductCreate(BaseModel):
@@ -9,6 +9,9 @@ class ProductCreate(BaseModel):
     target_price: float = Field(gt=0)
     product_name: Optional[str] = None
     user_id: str = "demo-user"
+    # Where the price-drop alert email goes. Optional: if empty, the worker
+    # falls back to ALERT_EMAIL_TO from its .env (handy for demos).
+    notify_email: Optional[EmailStr] = None
 
 
 class ProductOut(BaseModel):
@@ -20,7 +23,12 @@ class ProductOut(BaseModel):
     target_price: float
     current_price: Optional[float] = None
     alert_sent: bool = False
+    notify_email: Optional[str] = None
     created_at: datetime
+
+
+class NotifyEmailUpdate(BaseModel):
+    notify_email: Optional[EmailStr] = None
 
 
 class PricePoint(BaseModel):

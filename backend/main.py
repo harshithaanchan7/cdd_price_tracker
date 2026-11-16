@@ -21,6 +21,7 @@ from analytics import (
 from database import get_db, init_db
 from models import (
     BudgetSet,
+    NotifyEmailUpdate,
     PricePoint,
     ProductCreate,
     ProductOut,
@@ -107,6 +108,7 @@ def serialize(doc: dict) -> ProductOut:
         target_price=doc["target_price"],
         current_price=doc.get("current_price"),
         alert_sent=doc.get("alert_sent", False),
+        notify_email=doc.get("notify_email"),
         created_at=doc["created_at"],
     )
 
@@ -146,6 +148,7 @@ def add_product(payload: ProductCreate, db=Depends(get_db)):
         "target_price": payload.target_price,
         "current_price": None,
         "alert_sent": False,
+        "notify_email": str(payload.notify_email) if payload.notify_email else None,
         "created_at": datetime.now(timezone.utc),
     }
     result = db.products.insert_one(doc)
@@ -169,6 +172,24 @@ def get_history(product_id: str, db=Depends(get_db)):
     product = get_product_or_404(db, product_id)
     rows = db.price_history.find({"product_id": product["_id"]}).sort("checked_at", 1)
     return [PricePoint(price=r["price"], checked_at=r["checked_at"]) for r in rows]
+
+
+@app.patch("/products/{product_id}/notify-email", response_model=ProductOut)
+def update_notify_email(
+    product_id: str, payload: NotifyEmailUpdate, db=Depends(get_db)
+):
+    """Set or clear the email address that gets the price-drop alert."""
+    oid = to_object_id(product_id)
+    email = str(payload.notify_email) if payload.notify_email else None
+    result = db.products.update_one(
+        {"_id": oid},
+        # Reset alert_sent so the new address gets an alert if the price
+        # is already below target.
+        {"$set": {"notify_email": email, "alert_sent": False}},
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Product not found")
+    return serialize(db.products.find_one({"_id": oid}))
 
 
 @app.delete("/products/{product_id}")

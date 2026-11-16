@@ -8,6 +8,8 @@ function AddProduct({ onAddProduct, onCancel }) {
     const product = {
       product_url: formData.get("product_url"),
       target_price: Number(formData.get("target_price")),
+      // Send null (not "") when left empty so the backend accepts it
+      notify_email: formData.get("notify_email")?.trim() || null,
     };
 
     onAddProduct(product);
@@ -35,6 +37,13 @@ function AddProduct({ onAddProduct, onCancel }) {
             placeholder="Enter your target price"
             min="1"
             required
+          />
+
+          <label>Email for price-drop alert (optional)</label>
+          <input
+            type="email"
+            name="notify_email"
+            placeholder="you@example.com"
           />
 
           <div className="add-product-actions">

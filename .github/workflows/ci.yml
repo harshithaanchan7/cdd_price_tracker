@@ -35,6 +35,11 @@ jobs:
       - name: Run scraper tests
         run: python -m pytest scraper/tests -v
 
+      - name: Run worker notification tests
+        run: python -m pytest worker/tests -v
+        env:
+          PYTHONPATH: worker
+
   frontend-check:
     name: Frontend Lint and Build
     runs-on: ubuntu-latest
