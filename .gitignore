@@ -1,8 +1,36 @@
+
+# Python
 venv/
+.venv/
 __pycache__/
-*.pyc
+*.py[cod]
 .pytest_cache/
+
+# Environment files
 .env
+.env.*
+!.env.example
+**/.env
+
+# IDE settings
 .vscode/
 .idea/
+
+# Node.js and frontend
+node_modules/
+dist/
+
+# Test coverage
+.coverage
+htmlcov/
+
+# npm logs
+npm-debug.log*
+*.log
+
+# Celery Beat runtime files
+**/celerybeat-schedule*
+
+# Operating system
 .DS_Store
+Thumbs.db
