@@ -127,9 +127,6 @@ function ProductList({ onNavigate }) {
           <span onClick={() => onNavigate("history")}>
             Price History
           </span>
-          <span onClick={() => onNavigate("profile")}>
-            Profile
-          </span>
           <span onClick={() => onNavigate("budget")}>
             Budget Tracker
           </span>
